@@ -9,6 +9,10 @@ class GestureClassifier:
     def __init__(self):
         self.visualisation = VectorVisualisation()
 
+    def enhanced_softmax(self, values, beta=2):
+        exp_values = np.exp(beta * values)
+        return exp_values / np.sum(exp_values)
+
     def classify(self, landmarks):
         """
         Classify gesture based on hand landmarks.
@@ -58,8 +62,7 @@ class GestureClassifier:
         distance_from_index_base = self.calculate_distance((thumb_tip.x, thumb_tip.y, thumb_tip.z), (index_base.x, index_base.y, index_base.z))
         distance_from_middle_joint = self.calculate_distance((thumb_tip.x, thumb_tip.y, thumb_tip.z), (middle_joint.x, middle_joint.y, middle_joint.z))
         
-        # return "acclerating" if distance > 0.15 else "Constant speed"
-        return "constant speed" if (distance_from_index_base < 0.12 or distance_from_middle_joint < 0.12) else "acclerating"
+        return "constant speed" if (distance_from_index_base < 0.15 or distance_from_middle_joint < 0.15) else "acclerating"
     
     def calculate_index_vector(self, landmarks, index_tip_id = 8, index_base_id = 5):
         tip = landmarks.landmark[index_tip_id]
@@ -76,14 +79,7 @@ class GestureClassifier:
 
     
 
-    def classify_vector_direction(self, vector, threshold=0.4):
-        """
-        Classify the direction of a vector.
-        
-        :param vector: Input 3D vector [x, y, z].
-        :param threshold: Minimum contribution for secondary direction to be included.
-        :return: A string representing the direction.
-        """
+    def classify_vector_direction(self, vector, threshold=0.20):
         directions = ["X-axis", "Y-axis", "Z-axis"]
         axis_labels = {
             "X-axis": ["Left", "Right"],
@@ -93,7 +89,7 @@ class GestureClassifier:
         
         # vector = np.array(vector)
 
-        softmaxed_vector = softmax(np.abs(vector))
+        softmaxed_vector = self.enhanced_softmax(np.abs(vector))
         print(softmaxed_vector)                                             #DELETE
         
         # Find the dominant axis

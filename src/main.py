@@ -13,8 +13,6 @@ mp_drawing = mp.solutions.drawing_utils
 classifier = GestureClassifier()
 
 
-count = 0
-
 # Start webcam capture
 cap = cv2.VideoCapture(0)
 image = np.zeros((500, 500, 3), dtype=np.uint8)
@@ -37,7 +35,7 @@ while cap.isOpened():
 
             # Detect gesture using the classifier
             gesture = classifier.classify(hand_landmarks)    
-            cv2.putText(frame, f"Gesture: {gesture}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(frame, f"Gesture: {gesture}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
 
 
     
