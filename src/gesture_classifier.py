@@ -33,7 +33,7 @@ class GestureClassifier:
         else:
             index_vector = self.calculate_index_vector(landmarks)
             direction = self.classify_vector_direction(index_vector)
-            return direction
+            return f"{direction} and {is_acclerating}"
 
             
 
@@ -58,21 +58,22 @@ class GestureClassifier:
 
         return "acclerating" if distance > 0.12 else "Constant speed"
     
-    def calculate_index_vector(self, landmarks, index_tip_id = 8, index_base_id = 4):
+    def calculate_index_vector(self, landmarks, index_tip_id = 8, index_base_id = 5):
         tip = landmarks.landmark[index_tip_id]
         base = landmarks.landmark[index_base_id]
 
-        direction = np.array([tip.x - base.x, tip.y - base.y, tip.z - base.z])
+        direction = np.array([tip.x - base.x, base.y - tip.y, base.z - tip.z])
         magnitude = np.linalg.norm(direction)
+        # print(direction)
 
-        return direction/magnitude if magnitude > 0 else np.zeros(3)   
+        return direction/magnitude 
     
     
     
 
     
 
-    def classify_vector_direction(self, vector, threshold=0.1):
+    def classify_vector_direction(self, vector, threshold=0.4):
         """
         Classify the direction of a vector.
         
@@ -88,7 +89,9 @@ class GestureClassifier:
         }
         
         # vector = np.array(vector)
-        softmaxed_vector = softmax(vector)
+
+        softmaxed_vector = softmax(np.abs(vector))
+        print(softmaxed_vector)                                             #DELETE
         
         # Find the dominant axis
         dominant_axis = np.argmax(softmaxed_vector)
