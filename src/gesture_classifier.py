@@ -1,7 +1,14 @@
 import math
 
+import numpy as np
+from scipy.special import softmax
+from motion_controller import MotionController
+from vector_visualisation import VectorVisualisation
 
 class GestureClassifier:
+    def __init__(self):
+        self.visualisation = VectorVisualisation()
+
     def classify(self, landmarks):
         """
         Classify gesture based on hand landmarks.
@@ -11,61 +18,27 @@ class GestureClassifier:
         - "Open Hand": All fingers are extended.
         - "Unknown Gesture": Any other configuration.
         """
-        finger_tips = [4, 8, 12, 16, 20]  # Thumb, Index, Middle, Ring, Pinky
-        folded_fingers = []
+        controller = MotionController()
+        index_tip = landmarks.landmark[8]
+        index_base = landmarks.landmark[5]
         wrist = landmarks.landmark[0]
+        
         
 
         is_ring_closed = self.is_finger_closed(landmarks, finger_tip_index=16, finger_base_index = 13)
-        if is_ring_closed:
-            return "Closed"
+        is_middle_closed = self.is_finger_closed(landmarks, finger_tip_index=12, finger_base_index = 9)
+        is_acclerating = self.is_acclerating(landmarks)
+        if (not (is_ring_closed or is_middle_closed)) or index_tip.z > -0.1:
+            return "STOP"
         else:
-            return "Open"
-        # is_pinky_closed = self.is_finger_closed(landmarks, finger_base_index=20, finger_base_index = 0)
+            index_vector = self.calculate_index_vector(landmarks)
+            direction = self.classify_vector_direction(index_vector)
+            return direction
 
-        wrist_coords = {
-            'x': wrist.x,
-            'y': wrist.y,
-            'z': wrist.z
-        }
-        
+            
 
 
-
-        for tip_id in finger_tips:
-            if (landmarks.landmark[tip_id]) :
-                folded_fingers.append(False)  # Finger is extended
-            elif(landmarks.landmark[tip_id]):
-                folded_fingers.append(True)   # Finger is folded
-             
-
-
-        if all(folded_fingers):
-            return f"Closed Hand"
-        elif not any(folded_fingers):
-            return f"Open Hand"
-        else:
-            return "Unknown Gesture"
-
-
-    def calculate_index_direction(landmarks, tip_id = 8, base_id = 4):
-        tip = landmarks.landmark[tip_id]
-        base = landmarks.landmark[base_id]
-
-        direction = {
-            'x': tip.x - base.x,
-            'y': tip.y - base.y,
-            'z': tip.z - base.z
-        }
-
-        
-        magnitude = math.sqrt(direction['x']**2 + direction['y']**2 + direction['z']**2)
-        if magnitude > 0:
-            direction['x'] /= magnitude
-            direction['y'] /= magnitude
-            direction['z'] /= magnitude
-
-        return direction
+    
 
 
     def calculate_distance(self, coords1, coords2):
@@ -76,4 +49,57 @@ class GestureClassifier:
         finger_base = hand_landmarks.landmark[finger_base_index]
         distance = self.calculate_distance((finger_tip.x, finger_tip.y, finger_tip.z), (finger_base.x, finger_base.y, finger_tip.z))
         
-        return distance < 0.15
+        return distance < 0.30
+    
+    def is_acclerating(self, hand_landmarks, thumb_tip_index = 4, index_base_index = 5):
+        thumb_tip = hand_landmarks.landmark[thumb_tip_index]
+        index_base = hand_landmarks.landmark[index_base_index]
+        distance = self.calculate_distance((thumb_tip.x, thumb_tip.y, thumb_tip.z), (index_base.x, index_base.y, index_base.z))
+
+        return "acclerating" if distance > 0.12 else "Constant speed"
+    
+    def calculate_index_vector(self, landmarks, index_tip_id = 8, index_base_id = 4):
+        tip = landmarks.landmark[index_tip_id]
+        base = landmarks.landmark[index_base_id]
+
+        direction = np.array([tip.x - base.x, tip.y - base.y, tip.z - base.z])
+        magnitude = np.linalg.norm(direction)
+
+        return direction/magnitude if magnitude > 0 else np.zeros(3)   
+    
+    
+    
+
+    
+
+    def classify_vector_direction(self, vector, threshold=0.1):
+        """
+        Classify the direction of a vector.
+        
+        :param vector: Input 3D vector [x, y, z].
+        :param threshold: Minimum contribution for secondary direction to be included.
+        :return: A string representing the direction.
+        """
+        directions = ["X-axis", "Y-axis", "Z-axis"]
+        axis_labels = {
+            "X-axis": ["Left", "Right"],
+            "Y-axis": ["Down", "Up"],
+            "Z-axis": ["Back", "Front"],
+        }
+        
+        # vector = np.array(vector)
+        softmaxed_vector = softmax(vector)
+        
+        # Find the dominant axis
+        dominant_axis = np.argmax(softmaxed_vector)
+        primary_direction = axis_labels[directions[dominant_axis]][0 if vector[dominant_axis] < 0 else 1]
+        
+        # Check if secondary contributions are significant
+        secondary_axis = np.argsort(softmaxed_vector)[-2]
+        if softmaxed_vector[secondary_axis] >= threshold:
+            secondary_direction = axis_labels[directions[secondary_axis]][0 if vector[secondary_axis] < 0 else 1]
+            return f"{primary_direction} and {secondary_direction}"
+        else:
+            return primary_direction
+
+   
