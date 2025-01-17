@@ -51,12 +51,15 @@ class GestureClassifier:
         
         return distance < 0.30
     
-    def is_acclerating(self, hand_landmarks, thumb_tip_index = 4, index_base_index = 5):
+    def is_acclerating(self, hand_landmarks, thumb_tip_index = 4, index_base_index = 5, middle_joint_index = 10):
         thumb_tip = hand_landmarks.landmark[thumb_tip_index]
         index_base = hand_landmarks.landmark[index_base_index]
-        distance = self.calculate_distance((thumb_tip.x, thumb_tip.y, thumb_tip.z), (index_base.x, index_base.y, index_base.z))
-
-        return "acclerating" if distance > 0.12 else "Constant speed"
+        middle_joint = hand_landmarks.landmark[middle_joint_index]
+        distance_from_index_base = self.calculate_distance((thumb_tip.x, thumb_tip.y, thumb_tip.z), (index_base.x, index_base.y, index_base.z))
+        distance_from_middle_joint = self.calculate_distance((thumb_tip.x, thumb_tip.y, thumb_tip.z), (middle_joint.x, middle_joint.y, middle_joint.z))
+        
+        # return "acclerating" if distance > 0.15 else "Constant speed"
+        return "constant speed" if (distance_from_index_base < 0.12 or distance_from_middle_joint < 0.12) else "acclerating"
     
     def calculate_index_vector(self, landmarks, index_tip_id = 8, index_base_id = 5):
         tip = landmarks.landmark[index_tip_id]
