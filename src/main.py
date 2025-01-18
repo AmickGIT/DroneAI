@@ -29,6 +29,7 @@ while cap.isOpened():
     results = hands.process(frame_rgb)
 
     if results.multi_hand_landmarks:
+        
         for hand_landmarks in results.multi_hand_landmarks:
             # Draw landmarks
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)

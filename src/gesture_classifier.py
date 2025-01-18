@@ -17,8 +17,10 @@ class GestureClassifier:
         is_ring_closed = self.is_finger_closed(landmarks, finger_tip_index=16, finger_base_index = 13)
         is_middle_closed = self.is_finger_closed(landmarks, finger_tip_index=12, finger_base_index = 9)
         is_acclerating = self.is_acclerating(landmarks)
-        if (not (is_ring_closed or is_middle_closed)) or index_tip.z > -0.1:
+        if (not (is_ring_closed or is_middle_closed)):
             return "STOP"
+        elif(index_tip.z > -0.09):
+            return "Out of Range"
         else:
             index_vector = self.calculate_index_vector(landmarks)
             direction = self.classify_vector_direction(index_vector)
