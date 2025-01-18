@@ -1,11 +1,8 @@
 import math
 import numpy as np
-from vector_visualisation import VectorVisualisation
 
 class GestureClassifier:
-    def __init__(self):
-        self.visualisation = VectorVisualisation()
-
+    
     def enhanced_softmax(self, values, beta=2):
         exp_values = np.exp(beta * values)
         return exp_values / np.sum(exp_values)
@@ -34,7 +31,7 @@ class GestureClassifier:
         finger_base = hand_landmarks.landmark[finger_base_index]
         distance = self.calculate_distance((finger_tip.x, finger_tip.y, finger_tip.z), (finger_base.x, finger_base.y, finger_tip.z))
         
-        return distance < 0.35
+        return distance < 0.20
     
     def is_acclerating(self, hand_landmarks, thumb_tip_index = 4, index_base_index = 5, middle_joint_index = 10):
         thumb_tip = hand_landmarks.landmark[thumb_tip_index]

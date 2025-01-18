@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import mediapipe as mp
 from gesture_classifier import GestureClassifier
+from command_recog import CommandRecognition
 
 
 # Initialize Mediapipe hands module
@@ -11,11 +12,14 @@ mp_drawing = mp.solutions.drawing_utils
 
 # Initialize Gesture Classifier
 classifier = GestureClassifier()
+# voice_recognition = CommandRecognition()
 
 
 # Start webcam capture
 cap = cv2.VideoCapture(0)
 image = np.zeros((500, 500, 3), dtype=np.uint8)
+
+is_voice_controlled = False
 
 while cap.isOpened():
     ret, frame = cap.read()
