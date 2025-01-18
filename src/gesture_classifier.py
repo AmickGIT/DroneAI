@@ -1,5 +1,4 @@
 import math
-
 import numpy as np
 from scipy.special import softmax
 from motion_controller import MotionController
