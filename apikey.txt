@@ -1,0 +1,1 @@
+$env:GENAI_API_KEY="AIzaSyD42iTcQnwKnmPquVL-dU_p9664eOtGf_Q"

@@ -1,3 +1,4 @@
+from multiprocessing import Process
 import cv2
 import numpy as np
 import mediapipe as mp
@@ -12,45 +13,71 @@ mp_drawing = mp.solutions.drawing_utils
 
 # Initialize Gesture Classifier
 classifier = GestureClassifier()
-# voice_recognition = CommandRecognition()
+# 
 
 
 # Start webcam capture
 cap = cv2.VideoCapture(0)
 image = np.zeros((500, 500, 3), dtype=np.uint8)
 
+
+
 is_voice_controlled = False
 
-while cap.isOpened():
-    ret, frame = cap.read()
-    if not ret:
-        print("Error: Could not capture frame!")
-        break
-    
-    frame = cv2.flip(frame, 1)
-    # Convert to RGB for Mediapipe
-    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    results = hands.process(frame_rgb)
 
-    if results.multi_hand_landmarks:
+def gesture_control():
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            print("Error: Could not capture frame!")
+            break
         
-        for hand_landmarks in results.multi_hand_landmarks:
-            # Draw landmarks
-            mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+        frame = cv2.flip(frame, 1)
+        # Convert to RGB for Mediapipe
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = hands.process(frame_rgb)
 
-            # Detect gesture using the classifier
-            gesture = classifier.classify(hand_landmarks)    
-            cv2.putText(frame, f"Gesture: {gesture}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+        if results.multi_hand_landmarks:
+            
+            for hand_landmarks in results.multi_hand_landmarks:
+                # Draw landmarks
+                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+
+                # Detect gesture using the classifier
+                gesture = classifier.classify(hand_landmarks)    
+                cv2.putText(frame, f"Gesture: {gesture}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
 
 
+        
+        # Display the video feed
+        cv2.imshow('Hand Gesture Recognition', frame)
+
+        # Break on pressing 'q'
+        if cv2.waitKey(1) & 0xFF == ord('q') or cv2.getWindowProperty('Hand Gesture Recognition', cv2.WND_PROP_VISIBLE) < 1:
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+def voice_control():
+    voice_recognition = CommandRecognition()
+    voice_recognition.start_listening()
     
-    # Display the video feed
-    cv2.imshow('Hand Gesture Recognition', frame)
 
-    # Break on pressing 'q'
-    if cv2.waitKey(1) & 0xFF == ord('q') or cv2.getWindowProperty('Hand Gesture Recognition', cv2.WND_PROP_VISIBLE) < 1:
-        break
+if __name__ == '__main__':
+    gesture_process = Process(target=gesture_control)
+    voice_process = Process(target=voice_control)
 
-cap.release()
-cv2.destroyAllWindows()
+    gesture_process.start()
+    voice_process.start()
 
+    # Wait for gesture_process to finish
+    gesture_process.join()
+
+    # Once gesture_process finishes, terminate voice_process
+    print("Gesture process finished. Terminating voice process.")
+    voice_process.terminate()
+
+    # Wait for voice_process to terminate (it's good practice to join processes after terminating)
+    voice_process.join()

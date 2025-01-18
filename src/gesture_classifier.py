@@ -2,7 +2,10 @@ import math
 import numpy as np
 
 class GestureClassifier:
-    
+
+    is_voice_controlled = False
+
+
     def enhanced_softmax(self, values, beta=2):
         exp_values = np.exp(beta * values)
         return exp_values / np.sum(exp_values)
@@ -16,12 +19,12 @@ class GestureClassifier:
         is_acclerating = self.is_acclerating(landmarks)
         if (not (is_ring_closed or is_middle_closed)):
             return "STOP"
-        elif(index_tip.z > -0.09):
+        elif(index_tip.z > -0.10):
             return "Out of Range"
         else:
             index_vector = self.calculate_index_vector(landmarks)
             direction = self.classify_vector_direction(index_vector)
-            return f"{direction} and {is_acclerating}"
+            return f"{direction} {is_acclerating}"
 
     def calculate_distance(self, coords1, coords2):
         return math.sqrt((coords1[0]-coords2[0])**2 + (coords1[1]-coords2[1])**2 + (coords1[2]-coords2[2])**2)
@@ -74,5 +77,7 @@ class GestureClassifier:
             return f"{primary_direction} and {secondary_direction}"
         else:
             return primary_direction
-
+        
+    def set_mode(self, is_voice_controlled):
+        self.is_voice_controlled = is_voice_controlled
    
