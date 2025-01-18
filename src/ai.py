@@ -16,15 +16,16 @@ class AI():
                                                     3. Anything related to 'braking'/'slow' respond with 'STOP' only
                                                     4. If there are multiple interpretations, respond with the last one.
                                                     5. If the text is not related to a command, ex:"but","or" respond with 'no action' only
-                                                    6. If "move" then respond with 'front and constant speed'
-                                                    7. If the directions are opposite, ex: "left right quickly" or "up down" or "left right" respond with 'no action'
-                                                    8. Never respond with reasoning
-                                                    9. For actions like 'do a back flip' respond with no action
-                                                    10. "Forwards" or "backwards" is equivalent to "front" and "back"
-                                                    11. Words like forward or bottom are equivalent to "front" and "down" respectively.
-                                                    12. Words like "dawn", "don", "town" mean "down"
-                                                    13. Words like "love" mean "left"
-                                                    14. Treat "right" as a direction only
+                                                    6. If "move" or "go" then respond with 'front and constant speed'
+                                                    7. If "quickly" then respond with 'front and acclerating' 
+                                                    8. If the directions are opposite, ex: "left right quickly" or "up down" or "left right" respond with 'no action'
+                                                    9. Never respond with reasoning
+                                                    10. For actions like 'do a back flip' respond with no action
+                                                    11. "Forwards" or "backwards" is equivalent to "front" and "back"
+                                                    12. Words like forward or bottom are equivalent to "front" and "down" respectively.
+                                                    13. Words like "dawn", "don", "town" mean "down"
+                                                    14. Words like "love" mean "left"
+                                                    15. Treat "right" as a direction only
                                                Example: If 'go right' then respond with "right and constant speed"
                                                         If 'go quickly to left' respond with "left and acclerating"
                                                         If 'down right' then respond with 'down right and constant speed'

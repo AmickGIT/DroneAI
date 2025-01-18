@@ -4,7 +4,7 @@ import numpy as np
 import mediapipe as mp
 from gesture_classifier import GestureClassifier
 from command_recog import CommandRecognition
-
+from threading import Thread
 
 # Initialize Mediapipe hands module
 mp_hands = mp.solutions.hands
@@ -66,18 +66,16 @@ def voice_control():
     
 
 if __name__ == '__main__':
-    gesture_process = Process(target=gesture_control)
-    voice_process = Process(target=voice_control)
+    # Create and start threads
+    gesture_thread = Thread(target=gesture_control)
+    voice_thread = Thread(target=voice_control)
 
-    gesture_process.start()
-    voice_process.start()
+    gesture_thread.start()
+    voice_thread.start()
 
-    # Wait for gesture_process to finish
-    gesture_process.join()
+    # Wait for gesture_thread to finish
+    gesture_thread.join()
 
-    # Once gesture_process finishes, terminate voice_process
+    # Once gesture_thread finishes, terminate voice_thread
     print("Gesture process finished. Terminating voice process.")
-    voice_process.terminate()
-
-    # Wait for voice_process to terminate (it's good practice to join processes after terminating)
-    voice_process.join()
+    voice_thread.join()
