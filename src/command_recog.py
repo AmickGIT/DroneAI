@@ -27,9 +27,10 @@ class CommandRecognition:
                 result_dict = json.loads(result) 
                 text = result_dict.get('text', None)
                 if text:
-                    print("Recognised text: ", text)
-                    self.interpreted_text = self.ai.process_text(text) 
-                    print("Interpreted text: ",self.interpreted_text)
+                    if self.is_voice_controlled:
+                        print("Recognised text: ", text)
+                        self.interpreted_text = self.ai.process_text(text) 
+                        print("Interpreted text: ",self.interpreted_text)
                     try:
                         is_switch = int(self.ai.check_for_switch(text))
                         print(is_switch)
@@ -45,7 +46,7 @@ class CommandRecognition:
     def get_mode(self):
         return self.is_voice_controlled
     def get_command(self):
-        return self.interpreted_text
+        return self.interpreted_text.strip()
         
 
 # recognition = CommandRecognition()
