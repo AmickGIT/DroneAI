@@ -42,17 +42,17 @@ def gesture_control():
         else:
             cv2.putText(frame, "Gesture Controlled", (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,255), 2)
 
+        if not voice_recognition.get_mode():
+            if results.multi_hand_landmarks:
+                
+                for hand_landmarks in results.multi_hand_landmarks:
+                    # Draw landmarks
+                    mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-        if results.multi_hand_landmarks:
-            
-            for hand_landmarks in results.multi_hand_landmarks:
-                # Draw landmarks
-                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-
-                # Detect gesture using the classifier
-                gesture = classifier.classify(hand_landmarks)
-                if not voice_recognition.get_mode():    
-                    cv2.putText(frame, f"Gesture: {gesture}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+                    # Detect gesture using the classifier
+                    gesture = classifier.classify(hand_landmarks)
+                    if not voice_recognition.get_mode():    
+                        cv2.putText(frame, f"Gesture: {gesture}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
         elif voice_recognition.get_mode():
             command = voice_recognition.get_command()
             cv2.putText(frame, f"Gesture: {command}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)

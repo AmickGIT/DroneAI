@@ -43,22 +43,15 @@ class AI():
         return response.text
     
     def check_for_switch(self, statement):
-        response = self.model.generate_content(f"""Context: Switching between gesture control and voice control, for drones.
-                                  Rules: 
-                                  1.If "{statement}" means switching, respond with '1'.
-                                  2.If not then respond with '0'
-                                  3.If {statement} is contradictory to "switching" and non-standard rule, then respond with '0'
-                                  4.Dp not Give reasoning and respond with 0 or 1
-                                  5.Do not focus on irrelevant or ambiguous words
-                                  6.Words like "which", "with", "twitch", "batch", "rich", "such", "sewage", "woods" etc mean "switch".
-                                  7. I no input rules apply, respond with '0'
+        response = self.model.generate_content(f"""
+                                  Respond with '1' if the "{statement}" explicitly implies "switch", that is a change between gesture and voice control 
+                                  for drones, and '0' otherwise. Ignore directional words and ambiguous terms. 
+                                  Do not explain the rules or add commentary—just respond with '1' or '0' directly.
                                   
-                            
-                                  Examples: 
-                                  If 'switch' respond with '1' 
-                                  If 'switch quickly' respond with '1'
-                                  If 'don't switch' respond with '0'
-                                  If 'do not switch hello' respond with '0' by ignoring 'hello' as it is ambiguous
-                                  If 'that works' respond with '0' as there is no connection between switching and that works""")
+                                  Example:
+                                  If 'right' then respond with '0' because right is a directional word and doesn't imply switching"
+                                  If 'that works' then respond with '0' because 'that' works doesn't explicitly mean switching
+                                  If 'switch' then respond with '1' as switch explicitly means switching
+                                  If 'don't switch' then respond with '0' as don't switch means not switching""")
         return response.text
 # ai = AI()
