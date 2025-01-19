@@ -26,6 +26,7 @@ class AI():
                                                     13. Words like "dawn", "don", "town" mean "down"
                                                     14. Words like "love" mean "left"
                                                     15. Treat "right" as a direction only
+                                                    16. Do not focus on irrelevant or ambiguous words or phrases like [switch, but] etc
                                                Example: If 'go right' then respond with "right and constant speed"
                                                         If 'go quickly to left' respond with "left and acclerating"
                                                         If 'down right' then respond with 'down right and constant speed'
@@ -39,5 +40,25 @@ class AI():
                                                         If 'bottom' respond with 'down and constant speed'
                                                         If 'Up bottom quickly' respond with 'no action' as they are opposite directions.
                                                """)
+        return response.text
+    
+    def check_for_switch(self, statement):
+        response = self.model.generate_content(f"""Context: Switching between gesture control and voice control, for drones.
+                                  Rules: 
+                                  1.If "{statement}" means switching, respond with '1'.
+                                  2.If not then respond with '0'
+                                  3.If {statement} is contradictory to "switching" and non-standard rule, then respond with '0'
+                                  4.Dp not Give reasoning and respond with 0 or 1
+                                  5.Do not focus on irrelevant or ambiguous words
+                                  6.Words like "which", "with", "twitch", "batch", "rich", "such", "sewage", "woods" etc mean "switch".
+                                  7. I no input rules apply, respond with '0'
+                                  
+                            
+                                  Examples: 
+                                  If 'switch' respond with '1' 
+                                  If 'switch quickly' respond with '1'
+                                  If 'don't switch' respond with '0'
+                                  If 'do not switch hello' respond with '0' by ignoring 'hello' as it is ambiguous
+                                  If 'that works' respond with '0' as there is no connection between switching and that works""")
         return response.text
 # ai = AI()

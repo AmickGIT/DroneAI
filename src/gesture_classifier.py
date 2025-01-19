@@ -3,7 +3,6 @@ import numpy as np
 
 class GestureClassifier:
 
-    is_voice_controlled = False
 
 
     def enhanced_softmax(self, values, beta=2):

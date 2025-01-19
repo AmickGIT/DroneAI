@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from multiprocessing import Event, Process
 import cv2
 import numpy as np
 import mediapipe as mp
@@ -23,8 +23,8 @@ image = np.zeros((500, 500, 3), dtype=np.uint8)
 
 
 is_voice_controlled = False
-
-
+terminate_event = Event()
+voice_recognition = CommandRecognition(terminate_event)
 def gesture_control():
 
     while cap.isOpened():
@@ -37,6 +37,11 @@ def gesture_control():
         # Convert to RGB for Mediapipe
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = hands.process(frame_rgb)
+        if voice_recognition.get_mode():
+            cv2.putText(frame, "Voice Controlled", (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,255), 2)
+        else:
+            cv2.putText(frame, "Gesture Controlled", (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,255), 2)
+
 
         if results.multi_hand_landmarks:
             
@@ -45,10 +50,10 @@ def gesture_control():
                 mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
                 # Detect gesture using the classifier
-                gesture = classifier.classify(hand_landmarks)    
-                cv2.putText(frame, f"Gesture: {gesture}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
-
-
+                gesture = classifier.classify(hand_landmarks)
+                if not voice_recognition.get_mode():    
+                    cv2.putText(frame, f"Gesture: {gesture}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+                
         
         # Display the video feed
         cv2.imshow('Hand Gesture Recognition', frame)
@@ -57,12 +62,14 @@ def gesture_control():
         if cv2.waitKey(1) & 0xFF == ord('q') or cv2.getWindowProperty('Hand Gesture Recognition', cv2.WND_PROP_VISIBLE) < 1:
             break
 
+    terminate_event.set()
+
     cap.release()
     cv2.destroyAllWindows()
 
 def voice_control():
-    voice_recognition = CommandRecognition()
     voice_recognition.start_listening()
+
     
 
 if __name__ == '__main__':
