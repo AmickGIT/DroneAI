@@ -6,6 +6,7 @@ from vosk import Model, KaldiRecognizer
 
 class CommandRecognition:
     is_voice_controlled = False
+    interpreted_text = "front and constant speed"
     def __init__(self, terminate_event: Event):
         self.model = Model("./vosk-model-small-en-in-0.4")
         self.recognizer = KaldiRecognizer(self.model, 16000)
@@ -27,7 +28,8 @@ class CommandRecognition:
                 text = result_dict.get('text', None)
                 if text:
                     print("Recognised text: ", text)
-                    print("Interpreted text: ",self.ai.process_text(text))
+                    self.interpreted_text = self.ai.process_text(text) 
+                    print("Interpreted text: ",self.interpreted_text)
                     try:
                         is_switch = int(self.ai.check_for_switch(text))
                         print(is_switch)
@@ -42,6 +44,8 @@ class CommandRecognition:
 
     def get_mode(self):
         return self.is_voice_controlled
+    def get_command(self):
+        return self.interpreted_text
         
 
 # recognition = CommandRecognition()
