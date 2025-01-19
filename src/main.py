@@ -25,6 +25,9 @@ image = np.zeros((500, 500, 3), dtype=np.uint8)
 is_voice_controlled = False
 terminate_event = Event()
 voice_recognition = CommandRecognition(terminate_event)
+
+last_command = None
+
 def gesture_control():
 
     while cap.isOpened():
@@ -55,7 +58,9 @@ def gesture_control():
                         cv2.putText(frame, f"Gesture: {gesture}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
         elif voice_recognition.get_mode():
             command = voice_recognition.get_command()
-            cv2.putText(frame, f"Gesture: {command}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+            if command is not None:
+                last_command = command
+            cv2.putText(frame, f"Gesture: {last_command}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
         
         # Display the video feed
         cv2.imshow('Hand Gesture Recognition', frame)

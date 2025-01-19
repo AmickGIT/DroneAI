@@ -47,7 +47,7 @@ class CommandRecognition:
     def get_mode(self):
         return self.is_voice_controlled
     def get_command(self):
-        return self.interpreted_text.strip()
+        return self.interpreted_text
         
 
 # recognition = CommandRecognition()
