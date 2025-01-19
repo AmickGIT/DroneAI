@@ -41,7 +41,7 @@ def gesture_control():
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = hands.process(frame_rgb)
         if voice_recognition.get_mode():
-            cv2.putText(frame, "Voice Controlled", (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,255), 2)
+            cv2.putText(frame, "Voice Controlled", (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,255,255), 2)
         else:
             cv2.putText(frame, "Gesture Controlled", (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0,0,255), 2)
 

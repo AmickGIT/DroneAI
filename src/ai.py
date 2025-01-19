@@ -11,7 +11,7 @@ class AI():
     def process_text(self, text):
         response = self.model.generate_content(f"""Interpret "{text}" in the context of commands for drone control.
                                               Rules:0. The vaild directions are: [up, down, left, right , front, back] and all possible combinations taking 2 at a time.
-                                                    1. Anything related to 'fast'/'quick' add the suffix 'and acclerating' after the direction
+                                                    1. Anything related to 'fast'/'quick'/'acclerate' add the suffix 'and acclerating' after the direction
                                                     2. "constant speed" is the default suffix is words related to "fast" or "slow" are not present
                                                     3. Anything related to 'braking'/'slow' respond with 'STOP' only
                                                     4. If there are multiple interpretations, respond with the last one.
