@@ -37,6 +37,7 @@ class CommandRecognition:
                         if is_switch == 1:
                             self.is_voice_controlled = not self.is_voice_controlled
                             self.interpreted_text = "front and constant speed"
+                            print("Switched to: ", "Voice" if self.is_voice_controlled else "Gesture")
                     except:
                         print("Try again")
         self.stream.stop_stream()

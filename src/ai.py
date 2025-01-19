@@ -34,7 +34,7 @@ class AI():
                                                         If 'go left and right' respond in context to the latest words, that is "right and constant speed"
                                                         If 'forward' then respond with 'front and constant speed'
                                                         If 'back slowly' respond with 'STOP'
-                                                      If 'forward down' respond with 'front down and constant speed'
+                                                        If 'forward down' respond with 'front down and constant speed'
                                                         If 'back right quickly' respond with "Back right and acclerating"
                                                         If 'up' respond with "up and constant speed"
                                                         If 'bottom' respond with 'down and constant speed'
