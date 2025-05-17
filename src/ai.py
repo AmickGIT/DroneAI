@@ -1,11 +1,13 @@
 import google.generativeai as genai
-
-
-
-
+import os
+from dotenv import load_dotenv
 class AI():
     def __init__(self):
-        genai.configure(api_key="AIzaSyD42iTcQnwKnmPquVL-dU_p9664eOtGf_Q")
+        load_dotenv()
+        API_KEY = os.getenv("API_KEY")
+        if not API_KEY:
+            raise RuntimeError("API_KEY not found in environment. Did you forget to set it in .env?")
+        genai.configure(api_key=API_KEY)
         self.model = genai.GenerativeModel("gemini-1.5-flash")
     
     def process_text(self, text):
