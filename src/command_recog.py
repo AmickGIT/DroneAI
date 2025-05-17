@@ -29,6 +29,7 @@ class CommandRecognition:
                 if text:
                     
                     try:
+                        print(text)
                         is_switch = int(self.ai.check_for_switch(text))
                         print(is_switch)
                         if is_switch == 1:
